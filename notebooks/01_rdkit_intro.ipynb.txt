@@ -1,5 +1,0 @@
-from rdkit import Chem
-from rdkit.Chem import Draw, Descriptors
-import pandas as pd
-df = pd.read_csv("../data/molecules.csv")
-df
