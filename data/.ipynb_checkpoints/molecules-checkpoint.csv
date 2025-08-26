@@ -1,0 +1,5 @@
+type,name,smiles
+aldehyde,Benzaldehyde,O=CC1=CC=CC=C1
+aldehyde,Salicylaldehyde,O=CC1=CC=CC=C1O
+amine,Aniline,NC1=CC=CC=C1
+amine,p-Toluidine,NC1=CC=C(C=C1)C
