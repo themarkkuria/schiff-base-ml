@@ -1,5 +1,0 @@
-(base) PS C:\Users\USER> conda activate schiff_base
-(schiff_base) PS C:\Users\USER> # go to project folder
-(schiff_base) PS C:\Users\USER> cd C:\Users\USER\schiff-base-ml
-(schiff_base) PS C:\Users\USER\schiff-base-ml>
-jupyter notebook
