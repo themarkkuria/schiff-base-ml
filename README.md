@@ -1,258 +1,249 @@
-\# Schiff Base ML: Machine Learning–Assisted Design of Schiff Base Molecules
+# Schiff Base ML: AI-Driven Molecular Design Platform
 
-
-
-This project combines \*\*computational chemistry\*\* and \*\*machine learning\*\* to accelerate the design and discovery of Schiff base molecules. By leveraging \*\*RDKit\*\* for cheminformatics and \*\*scikit-learn\*\* for model building, the workflow enables automated generation of Schiff base ligands, calculation of molecular descriptors, and prediction of their potential bioactivity.
-
-
-
-Aldehydes + Amines
-
-&nbsp;       │
-
-&nbsp;       ▼
-
-&nbsp;Automated Schiff Base Generation
-
-&nbsp;       │
-
-&nbsp;       ▼
-
-Molecular Descriptors (MW, LogP, TPSA, HBD, HBA)
-
-&nbsp;       │
-
-&nbsp;       ▼
-
-&nbsp;  Machine Learning Model
-
-&nbsp;(Random Forest Classifier)
-
-&nbsp;       │
-
-&nbsp;       ▼
-
-&nbsp;Predicted Antibacterial Candidates
-
-
+A modular platform for AI-driven molecular design and evaluation, focused on antibacterial applications. Originally built for Schiff base molecules, now expanded to support multiple categories of antibacterial candidates.
 
 ---
 
-Background \& Scientific Motivation
+## Overview
 
+This project combines **computational chemistry** and **machine learning** to accelerate the design and discovery of antibacterial molecules. It supports:
 
-
-Schiff bases are a class of imine-containing compounds widely studied in \*\*coordination chemistry, catalysis, and drug discovery\*\*. Their structural flexibility allows them to form stable complexes with metals, enabling applications as catalysts in organic synthesis and materials science. In medicinal chemistry, Schiff bases and their derivatives have shown promising \*\*antimicrobial, anticancer, and antioxidant activities\*\*.  
-
-
-
-Traditionally, discovering active Schiff bases requires labor-intensive synthesis and screening. By integrating \*\*machine learning with cheminformatics\*\*, this project provides a \*\*green, cost-efficient, and scalable approach\*\* to designing novel Schiff bases with targeted properties, accelerating research at the interface of chemistry and AI.
-
-
+- **Schiff Bases** - Original imine-based compounds
+- **Antimicrobial Peptides (AMPs)** - Short amino acid sequences
+- **Repurposed Drugs** - FDA-approved drugs for antibacterial use
+- **Polyphenols/Natural Products** - Curcumin-like and plant-derived compounds
+- **PROTACs/Peptidomimetics** - Protein degraders and peptide mimics
 
 ---
 
+## Architecture
 
+```
+Input → Generation → Featurization → ML Prediction → Ranking → Output
+```
 
-\## 🎯 Project Goals
+Each category has its own module with:
+- Molecule/Sequence Generator
+- Feature Extractor (RDKit/BioPython)
+- ML Model (RandomForest/GradientBoosting)
+- Viability Ranker
 
-\- \*\*Discover novel Schiff bases with targeted bioactivity\*\*  
-
-\- \*\*Design ligands for new catalytic platforms\*\*  
-
-\- \*\*Reduce waste and costs through green, ML-assisted design\*\*  
-
-\- \*\*Provide a generalizable scaffold design framework\*\* for computational chemistry  
-
-
-
----
-
-
-
-\## 🧪 Workflow Overview
-
-
-
-The pipeline consists of two stages, implemented in Jupyter notebooks:
-
-
-
-\### 1. Schiff Base Generation \& Descriptor Calculation
-
-\- Reads aldehydes and amines from `data/molecules.csv`  
-
-\- Uses an RDKit reaction SMARTS template to automatically generate Schiff base products  
-
-\- Computes descriptors: \*\*Molecular Weight, LogP, TPSA, H-bond donors/acceptors\*\*  
-
-\- Saves product list and descriptors for downstream ML  
-
-
-
-\*\*Key Outputs:\*\*  
-
-\- `data/generated\_schiff\_bases.csv` (new Schiff base products)  
-
-\- `data/generated\_schiff\_bases\_descriptors.csv` (products + descriptors)  
-
-
+All modules integrate via the **UnifiedRanker** for cross-category comparison.
 
 ---
 
+## Project Structure
 
-
-\### 2. Machine Learning Model for Antibacterial Activity
-
-\- Loads a curated dataset (`data/schiff\_base\_complete\_dataset.csv`) containing Schiff bases with experimental MIC values  
-
-\- Trains a \*\*Random Forest classifier\*\* to predict antibacterial activity (active vs inactive, based on MIC threshold)  
-
-\- Evaluates model accuracy on held-out test data  
-
-\- Applies the model to newly generated Schiff bases  
-
-\- Ranks candidates by probability of being antibacterial  
-
-
-
-\*\*Key Outputs:\*\*  
-
-\- `results/predicted\_antibacterial\_candidates.csv` → ranked predictions of novel active candidates  
-
-
-
----
-
-
-
-\## 📂 Project Structure
-
-
-
+```
 schiff-base-ml/
-
-├── data/
-
-│ ├── molecules.csv # starting reactants (aldehydes, amines)
-
-│ ├── generated\_schiff\_bases.csv # auto-generated Schiff base products
-
-│ ├── generated\_schiff\_bases\_descriptors.csv# descriptors for ML stage
-
-│ └── schiff\_base\_complete\_dataset.csv # training dataset (with MIC values)
-
-│
-
+├── core/
+│   ├── pipeline.py         # Shared ML utilities + UnifiedRanker
+│   ├── data_fetch.py      # PubChem/DBAASP data fetchers
+│   └── __init__.py
+├── modules/
+│   ├── amp_module.py       # Antimicrobial Peptides
+│   ├── repurposed_module.py # FDA drug repurposing
+│   ├── polyphenols_module.py # Curcumin/natural products
+│   ├── protac_module.py    # PROTACs & peptidomimetics
+│   └── __init__.py
 ├── notebooks/
-
-│ ├── 01\_rdkit\_intro.ipynb # generate Schiff bases + descriptors
-
-│ └── 02\_ml\_pipeline.ipynb # ML model training + candidate prediction
-
-│
-
-├── results/
-
-│ └── predicted\_antibacterial\_candidates.csv # ranked ML output
-
-│
-
+│   ├── 01_rdkit_intro.ipynb        # Original Schiff base generation
+│   ├── 02_ml_pipeline.ipynb        # Original ML pipeline
+│   └── training/
+│       ├── amp_training.ipynb     # AMP model training
+│       └── protac_training.ipynb   # PROTAC model training
+├── data/
+│   ├── amp/                # DBAASP data
+│   ├── repurposed/         # FDA drugs
+│   ├── polyphenols/       # Natural products
+│   └── protac/             # PROTAC-DB data
+├── results/                # Prediction outputs
+├── models/                 # Trained models
+├── app.py                  # Streamlit web interface
 ├── requirements.txt
-
 └── README.md
-
-
-
-
+```
 
 ---
 
+## Categories
 
+### 1. Schiff Bases
+- Generate from aldehydes + amines via RDKit reaction SMARTS
+- Descriptors: MW, LogP, TPSA, HBD, HBA
+- Random Forest classifier for antibacterial prediction
 
-\## ⚙️ Installation
+### 2. Antimicrobial Peptides (AMPs)
+- Generate random/helical/cyclic peptides (10-50 AA)
+- Featurization: BioPython physicochemical properties
+- ESM-2 embeddings option for advanced models
+- Multi-task: predict activity + low toxicity
 
+### 3. Repurposed Drugs
+- Fetch FDA-approved drugs via PubChem API
+- Halicin-like scaffold similarity screening
+- Morgan + MACCS fingerprints
 
+### 4. Polyphenols/Natural Products
+- Curcumin analog generation
+- Scaffold hopping
+- Co-crystal partner prediction
+- Solubility/drug-likeness scoring
 
-Clone the repository and install dependencies:
+### 5. PROTACs/Peptidomimetics
+- Three-part PROTAC design (warhead-linker-E3 ligase)
+- Degrader-specific descriptors (amide bonds, chain length)
+- Target: LpxC, ClpP, FtsH, DegP
 
+---
 
+## Installation
 
 ```bash
-
 git clone https://github.com/themarkkuria/schiff-base-ml.git
-
 cd schiff-base-ml
-
 pip install -r requirements.txt
+```
 
+### Requirements
+- numpy, pandas, scikit-learn
+- rdkit (cheminformatics)
+- biopython (peptide analysis)
+- pubchempy (data fetching)
+- imbalanced-learn (class balancing)
+- shap (model interpretation)
+- streamlit (web interface)
 
+---
 
+## Usage
 
+### Quick Test (Multi-Category Ranking)
 
-🚀 Usage
+```python
+from core.pipeline import UnifiedRanker
+from modules import (
+    generate_synthetic_amp_data,
+    generate_synthetic_repurposing_data,
+    generate_synthetic_polyphenol_data,
+    generate_synthetic_protac_data
+)
 
+# Generate predictions for each category
+dfs = {
+    'amp': generate_synthetic_amp_data(100),
+    'repurposed': generate_synthetic_repurposing_data(100),
+    'polyphenol': generate_synthetic_polyphenol_data(100),
+    'protac': generate_synthetic_protac_data(100)
+}
 
+# Unified ranking across all categories
+combined = UnifiedRanker.rank_multi_category(dfs, top_k=50)
+print(combined[['category', 'final_score', 'activity_score']].head(20))
+```
 
-Generate Schiff bases + descriptors
+### Run Notebooks
 
-Run notebooks/01\_rdkit\_intro.ipynb to build new Schiff base molecules from aldehydes + amines.
+```bash
+# AMP Training
+jupyter notebook notebooks/training/amp_training.ipynb
 
+# PROTAC Training  
+jupyter notebook notebooks/training/protac_training.ipynb
 
+# Original Schiff Base Pipeline
+jupyter notebook notebooks/01_rdkit_intro.ipynb
+jupyter notebook notebooks/02_ml_pipeline.ipynb
+```
 
-Train ML model + predict activity
+### Streamlit App
 
-Run notebooks/02\_ml\_pipeline.ipynb to train a Random Forest model and predict activity of generated Schiff bases.
+```bash
+streamlit run app.py
+```
 
+---
 
+## Unified Ranking System
 
-Check results
+The `UnifiedRanker` class enables cross-category comparison:
 
-Open results/predicted\_antibacterial\_candidates.csv for the ranked candidate molecules.
+```python
+UnifiedRanker.rank_single_category(df, category)
+UnifiedRanker.rank_multi_category(dfs_dict, weights, top_k)
+UnifiedRanker.diversity_filter(df, category, threshold)
+```
 
+**Scoring factors:**
+- Activity probability (ML prediction)
+- Drug-likeness (MW, LogP, TPSA rules)
+- Category-specific weights (e.g., PROTACs weighted 1.3x for antibacterial focus)
 
+---
 
+## Data Sources
 
+- **DBAASP** - Antimicrobial peptide database (https://dbaasp.org)
+- **PROTAC-DB** - PROTAC degrader database
+- **PubChem** - FDA drugs, antibacterial compounds
+- **COCONUT** - Natural products database
 
-Example Output
+---
 
-\[RESULTS] Top predicted antibacterial candidates:
+## Model Training
 
-&nbsp;aldehyde    amine    product     MW    LogP   TPSA   predicted\_activity  probability\_active
+Each category follows the same pattern:
 
-&nbsp;Benzaldehyde Aniline C1=NC=...  211.3   2.34   45.2          1                 0.87
+```python
+from modules.amp_module import AMPFeaturizer, AMPModel
 
-&nbsp;...
+# Featurize
+features = AMPFeaturizer.featurize_batch(sequences)
 
+# Train
+model = AMPModel(model_type='rf')
+model.train(X_train, y_train)
 
+# Predict
+predictions = model.predict_sequences(new_sequences)
+```
 
-Audience \& Future Work
+---
 
+## Example Output
 
+```
+category   final_score   activity_score   druglikeness_score
+amp           1.0            0.95              0.85
+protac        0.92           0.88              0.78
+amp           0.89           0.82              0.91
+polyphenol    0.85           0.79              0.88
+repurposed    0.82           0.75              0.90
+```
 
-This repository is intended for:
+---
 
+## Future Enhancements
 
+- [ ] Load real DBAASP/PROTAC-DB data
+- [ ] ESM-2 fine-tuning for AMPs (GPU)
+- [ ] GNN models (Chemprop) for small molecules
+- [ ] Multi-task learning (activity + toxicity + ADMET)
+- [ ] Generative models (REINVENT, AMP-GAN)
+- [ ] AutoDock integration for target docking
+- [ ] Active learning loop
 
-Professors and researchers in computational chemistry \& catalysis
+---
 
+## License
 
+MIT License
 
-Developers exploring cheminformatics and ML pipelines
+---
 
+## Credits
 
-
-Planned extensions:
-
-
-
-Regression models for MIC prediction
-
-
-
-Integration with QSAR/QSPR workflows
-
-
-
-Expansion beyond Schiff bases to other ligand families.
-
+- Original Schiff Base ML by TheMarkKuria
+- RDKit for cheminformatics
+- BioPython for peptide analysis
+- DBAASP, PROTAC-DB, PubChem for data

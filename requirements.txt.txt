@@ -1,0 +1,2 @@
+(base) PS C:\Users\USER> conda activate schiff_base
+jupyter notebook
